@@ -24,7 +24,7 @@ let name = "Anton Jackson-Smith";
     antidote = {
       enable = true;
       plugins = [
-        "ohmyzsh/ohmyzsh path:plugins/per-directory-history"
+        # "ohmyzsh/ohmyzsh path:plugins/per-directory-history"
         "ohmyzsh/ohmyzsh path:plugins/gitfast"
       ];
     };
@@ -43,14 +43,14 @@ let name = "Anton Jackson-Smith";
         # diff = "difft"; 
     };
 
-    history = {
-      size = 100000;
-      save = 100000000;
-      # path = "${config.xdg.dataHome}/zsh/history/${hostName}/${hostName}.history";
-      extended = true;
-      ignoreDups = true;
-      share = true;
-    };
+    # history = {
+    #   size = 100000;
+    #   save = 100000000;
+    #   # path = "${config.xdg.dataHome}/zsh/history/${hostName}/${hostName}.history";
+    #   extended = true;
+    #   ignoreDups = true;
+    #   share = true;
+    # };
 
     initExtraFirst = ''
       if [[ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]]; then
@@ -67,12 +67,12 @@ let name = "Anton Jackson-Smith";
       export HISTIGNORE="pwd:ls:cd"
 
       # Set up per-directory-history
-      HISTORY_BASE="$HOME/.history/$USER@$(hostname -s)/"; export HISTORY_BASE
-      mkdir -p $HISTORY_BASE
-      HISTORY_START_WITH_GLOBAL=true
+      # HISTORY_BASE="$HOME/.history/$USER@$(hostname -s)/"; export HISTORY_BASE
+      # mkdir -p $HISTORY_BASE
+      # HISTORY_START_WITH_GLOBAL=true
 
       # Additional history options
-      setopt INC_APPEND_HISTORY
+      # setopt INC_APPEND_HISTORY
 
       # nix shortcuts
       shell() {
@@ -391,10 +391,15 @@ let name = "Anton Jackson-Smith";
 
     eza = {
       enable = true;
-      icons = true;
+      icons = "auto";
     };
 
     direnv = {
       enable = true;
+    };
+
+    atuin = {
+      enable = true;
+      enableZshIntegration = true;
     };
 }

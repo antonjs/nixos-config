@@ -40,13 +40,8 @@ with pkgs; [
   meslo-lgs-nf
   iosevka
   inter
-
-  (pkgs.nerdfonts.override {
-    fonts = [
-      "Iosevka"
-      "IosevkaTerm"
-    ];
-  })
+  nerd-fonts.iosevka
+  nerd-fonts.iosevka-term
 
   # Node.js development tools
   nodePackages.npm # globally install npm
@@ -70,6 +65,7 @@ with pkgs; [
 
   # Development
   caddy
+  claude-code
   esptool
   lazygit
   python3

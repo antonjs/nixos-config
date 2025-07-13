@@ -2,7 +2,7 @@ _:
 
 [
   # Development Tools
-  "homebrew/cask/docker"
+  # "docker"
   "visual-studio-code"
 
   # Productivity
@@ -15,7 +15,7 @@ _:
 
   # Design
   "bambu-studio"
-  "handbrake"
+  # "handbrake-app"
   "touchosc"
 
   # Utility Tools

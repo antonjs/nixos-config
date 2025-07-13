@@ -28,15 +28,12 @@ let user = "acjs"; in
     '';
   };
 
-
-  environment.systemPackages = with pkgs; [
-    emacs-unstable
-  ] ++ (import ../../modules/shared/packages.nix { inherit pkgs; });
+  environment.systemPackages = with pkgs; (import ../../modules/shared/packages.nix { inherit pkgs; });
 
   system = {
     checks.verifyNixPath = false;
     primaryUser = user;
-    stateVersion = 4;
+    stateVersion = 6;
 
     defaults = {
       NSGlobalDomain = {
