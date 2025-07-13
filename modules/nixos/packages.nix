@@ -1,70 +1,67 @@
-{ pkgs, inputs }:
+{ pkgs }:
+
 with pkgs;
 let shared-packages = import ../shared/packages.nix { inherit pkgs; }; in
 shared-packages ++ [
 
-  _1password-gui # Password manager
-  
-  apple-cursor # macOS-style cursor theme
-  
-  cider-appimage # Apple Music client
-  
-  cliphist # Clipboard history manager for Wayland
-  
-  tableplus-appimage # Database management tool
+  # Security and authentication
+  yubikey-agent
+  keepassxc
 
-  brlaser # Printer driver
+  # App and package management
+  appimage-run
+  gnumake
+  cmake
+  home-manager
 
-  chromedriver # Chrome webdriver for testing
+  # Media and design tools
+  vlc
+  fontconfig
+  font-manager
 
-  inputs.claude-desktop.packages."${pkgs.system}".claude-desktop-with-fhs
+  # Productivity tools
+  bc # old school calculator
+  galculator
 
-  discord # Voice and text chat
-
-  gimp # Image editor
-  glow # Terminal markdown viewer
-  google-chrome # Web browser
-  
-  hyprpicker # Wayland color picker
-
-  imv # Lightweight Wayland image viewer
-  
-  keepassxc # Password manager
-
+  # Audio tools
   pavucontrol # Pulse audio controls
-  playerctl # Control media players from command line
 
-  qmk # Keyboard firmware toolkit
+  # Testing and development tools
+  direnv
+  rofi
+  rofi-calc
+  postgresql
+  libtool # for Emacs vterm
 
-  screenkey # Display pressed keys on screen
-  simplescreenrecorder # Screen recording tool
+  # Screenshot and recording tools
+  flameshot
 
-  unixtools.ifconfig # Network interface configuration
-  unixtools.netstat # Network statistics
-  glances # System monitoring tool with style
+  # Text and terminal utilities
+  feh # Manage wallpapers
+  screenkey
+  tree
+  unixtools.ifconfig
+  unixtools.netstat
+  xclip # For the org-download package in Emacs
+  xorg.xwininfo # Provides a cursor to click and learn about windows
+  xorg.xrandr
 
-  vlc # Media player
+  # File and system utilities
+  inotify-tools # inotifywait, inotifywatch - For file system events
+  i3lock-fancy-rapid
+  libnotify
+  pcmanfm # File browser
+  sqlite
+  xdg-utils
 
-  # Wayland-specific tools for Niri
-  grim # Screenshot tool for Wayland
-  slurp # Area selection for screenshots
-  swappy # Screenshot annotation tool
-  swaylock # Screen locker for Wayland
-  swayidle # Idle management daemon
-  kanshi # Dynamic display configuration
-  wdisplays # GUI display configurator for Wayland
-  wev # Wayland event viewer (useful for debugging)
-  swaybg # Wallpaper daemon for Wayland
-  
-  nautilus # GNOME file browser with excellent Wayland support
-  
-  yubikey-agent # Yubikey SSH agent
-  pinentry-qt # GPG pinentry
+  # Other utilities
+  yad # yad-calendar is used with polybar
+  xdotool
+  google-chrome
 
-  zathura # PDF viewer
-  
-  # Terminal animations
-  cava # Console-based audio visualizer
-  asciiquarium # ASCII art aquarium animation
-  tty-clock # Terminal digital clock
+  # PDF viewer
+  zathura
+
+  # Music and entertainment
+  spotify
 ]

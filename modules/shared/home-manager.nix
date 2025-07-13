@@ -1,137 +1,89 @@
 { config, pkgs, lib, ... }:
 
-let name = "Dustin Lyons";
-    user = "dustin";
-    email = "dustin@dlyons.dev"; in
+let name = "Anton Jackson-Smith";
+    user = "acjs";
+    email = "anton@dyingstar.net"; in
 {
-
-  direnv = {
-      enable = true;
-      enableZshIntegration = true;
-      nix-direnv.enable = true;
-    };
-
+  # Shared shell configuration
   zsh = {
     enable = true;
     autocd = false;
-    cdpath = [ "~/.local/share/src" ];
     plugins = [
       {
-          name = "powerlevel10k";
-          src = pkgs.zsh-powerlevel10k;
-          file = "share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
+        name = "powerlevel10k";
+        src = pkgs.zsh-powerlevel10k;
+        file = "share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
       }
       {
-          name = "powerlevel10k-config";
-          src = lib.cleanSource ./config;
-          file = "p10k.zsh";
+        name = "powerlevel10k-config";
+        src = lib.cleanSource ./config;
+        file = "p10k.zsh";
       }
     ];
-    initContent = lib.mkBefore ''
+
+    antidote = {
+      enable = true;
+      plugins = [
+        "ohmyzsh/ohmyzsh path:plugins/per-directory-history"
+        "ohmyzsh/ohmyzsh path:plugins/gitfast"
+      ];
+    };
+
+    # Aliases
+    shellAliases = {
+        ls = "eza --color=always --icons=auto --group-directories-first"; # just replace ls by exa and allow all other exa arguments
+        l = "ls -lbF"; #   list, size, type
+        ll = "ls -laa"; # long, all
+        llm = "ll --sort=modified"; # list, long, sort by modification date
+        la = "ls -lbhHigUmuSa"; # all list
+        lx = "ls -lbhHigUmuSa@"; # all list and extended
+        tree = "eza --tree"; # tree view
+        lS = "eza -1"; # one column by just names
+        less = "less -R"; # passthrough colors
+        # diff = "difft"; 
+    };
+
+    history = {
+      size = 100000;
+      save = 100000000;
+      # path = "${config.xdg.dataHome}/zsh/history/${hostName}/${hostName}.history";
+      extended = true;
+      ignoreDups = true;
+      share = true;
+    };
+
+    initExtraFirst = ''
       if [[ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]]; then
         . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
         . /nix/var/nix/profiles/default/etc/profile.d/nix.sh
       fi
 
-      export TERM=xterm-256color
-
-      # Define PATH variables
+      # Define variables for directories
       export PATH=$HOME/.pnpm-packages/bin:$HOME/.pnpm-packages:$PATH
       export PATH=$HOME/.npm-packages/bin:$HOME/bin:$PATH
-      export PATH=$HOME/.composer/vendor/bin:$PATH
       export PATH=$HOME/.local/share/bin:$PATH
-      export PYTHONPATH="$HOME/.local-pip/packages:$PYTHONPATH"
 
       # Remove history data we don't want to see
       export HISTIGNORE="pwd:ls:cd"
 
-      # Ripgrep alias
-      alias search='rg -p --glob "!node_modules/*" --glob "!vendor/*" "$@"'
+      # Set up per-directory-history
+      HISTORY_BASE="$HOME/.history/$USER@$(hostname -s)/"; export HISTORY_BASE
+      mkdir -p $HISTORY_BASE
+      HISTORY_START_WITH_GLOBAL=true
 
-      # Emacs is my editor
-      export ALTERNATE_EDITOR=""
-      export EDITOR="emacsclient -t"
-      export VISUAL="emacsclient -c -a emacs"
-      e() {
-          emacsclient -t "$@"
-      }
-      
-      # Laravel Artisan
-      alias art='php artisan'
+      # Additional history options
+      setopt INC_APPEND_HISTORY
 
-      # Use difftastic, syntax-aware diffing
-      alias diff=difft
-
-      # Always color ls and group directories
-      alias ls='ls --color=auto'
-      
-      # SSH wrapper functions with terminal color changes
-      ssh-production() {
-          # Change terminal background to dark red
-          printf '\033]11;#3d1515\007'
-          command ssh production "$@"
-          # Reset terminal background
-          printf '\033]11;#1f2528\007'
+      # nix shortcuts
+      shell() {
+          nix-shell '<nixpkgs>' -A "$1"
       }
-      
-      ssh-staging() {
-          # Change terminal background to dark orange
-          printf '\033]11;#3d2915\007'
-          command ssh staging "$@"
-          # Reset terminal background
-          printf '\033]11;#1f2528\007'
-      }
-      
-      ssh-droplet() {
-          # Change terminal background to dark green
-          printf '\033]11;#153d15\007'
-          command ssh droplet "$@"
-          # Reset terminal background
-          printf '\033]11;#1f2528\007'
-      }
-      
-      # Override ssh command to detect known hosts
-      ssh() {
-          case "$1" in
-              production|209.97.152.81)
-                  # Change terminal background to dark red
-                  printf '\033]11;#3d1515\007'
-                  command ssh "$@"
-                  # Reset terminal background
-                  printf '\033]11;#1f2528\007'
-                  ;;
-              staging|174.138.88.191)
-                  # Change terminal background to dark orange
-                  printf '\033]11;#3d2915\007'
-                  command ssh "$@"
-                  # Reset terminal background
-                  printf '\033]11;#1f2528\007'
-                  ;;
-              droplet|165.227.66.119)
-                  # Change terminal background to dark green
-                  printf '\033]11;#153d15\007'
-                  command ssh "$@"
-                  # Reset terminal background
-                  printf '\033]11;#1f2528\007'
-                  ;;
-              *)
-                  command ssh "$@"
-                  ;;
-          esac
-      }
-      
-      # macOS-style open command using Nautilus
-      ${lib.optionalString pkgs.stdenv.hostPlatform.isLinux ''
-      open() {
-          nohup nautilus "$@" > /dev/null 2>&1 & disown
-      }
-      ''}
     '';
   };
 
   git = {
     enable = true;
-    ignores = [ "*.swp" ];
+    ignores = import ./gitglobalignore.nix;
     userName = name;
     userEmail = email;
     lfs = {
@@ -143,7 +95,6 @@ let name = "Dustin Lyons";
 	    editor = "vim";
         autocrlf = "input";
       };
-      commit.gpgsign = true;
       pull.rebase = true;
       rebase.autoStash = true;
     };
@@ -151,7 +102,7 @@ let name = "Dustin Lyons";
 
   vim = {
     enable = true;
-    plugins = with pkgs.vimPlugins; [ vim-airline vim-airline-themes vim-tmux-navigator ];
+    plugins = with pkgs.vimPlugins; [ vim-airline vim-airline-themes vim-startify vim-tmux-navigator ];
     settings = { ignorecase = true; };
     extraConfig = ''
       "" General
@@ -172,7 +123,7 @@ let name = "Dustin Lyons";
       set ruler
       set backspace=indent,eol,start
       set laststatus=2
-      " Don't use clipboard=unnamedplus, use macOS pbcopy/pbpaste instead
+      set clipboard=autoselect
 
       " Dir stuff
       set nobackup
@@ -215,9 +166,11 @@ let name = "Dustin Lyons";
       filetype plugin on
       filetype indent on
 
-      "" macOS clipboard integration
-      vnoremap <Leader>. :w !pbcopy<CR><CR>
-      nnoremap <Leader>, :r !pbpaste<CR>
+      "" Paste from clipboard
+      nnoremap <Leader>, "+gP
+
+      "" Copy from clipboard
+      xnoremap <Leader>. "+y
 
       "" Move cursor by display lines when wrapping
       nnoremap j gj
@@ -274,13 +227,21 @@ let name = "Dustin Lyons";
 
       font = {
         normal = {
-          family = "MesloLGS NF";
+          family = "IosevkaTerm Nerd Font";
           style = "Regular";
         };
         size = lib.mkMerge [
           (lib.mkIf pkgs.stdenv.hostPlatform.isLinux 10)
           (lib.mkIf pkgs.stdenv.hostPlatform.isDarwin 14)
         ];
+      };
+
+      dynamic_padding = true;
+      decorations = "full";
+      title = "Terminal";
+      class = {
+        instance = "Alacritty";
+        general = "Alacritty";
       };
 
       colors = {
@@ -324,28 +285,26 @@ let name = "Dustin Lyons";
         "/Users/${user}/.ssh/config_external"
       )
     ];
-    #matchBlocks = {
-    #  "github.com" = {
-    #    identitiesOnly = true;
-    #    identityFile = [
-    #      (lib.mkIf pkgs.stdenv.hostPlatform.isLinux
-    #        "/home/${user}/.ssh/id_github"
-    #      )
-    #      (lib.mkIf pkgs.stdenv.hostPlatform.isDarwin
-    #        "/Users/${user}/.ssh/id_github"
-    #      )
-    #    ];
-    #  };
-    #};
+    matchBlocks = {
+      "github.com" = {
+        identitiesOnly = true;
+        identityFile = [
+          (lib.mkIf pkgs.stdenv.hostPlatform.isLinux
+            "/home/${user}/.ssh/id_github"
+          )
+          (lib.mkIf pkgs.stdenv.hostPlatform.isDarwin
+            "/Users/${user}/.ssh/id_github"
+          )
+        ];
+      };
+    };
   };
 
   tmux = {
     enable = true;
-    shell = "${pkgs.zsh}/bin/zsh";
-    sensibleOnTop = false;
     plugins = with pkgs.tmuxPlugins; [
       vim-tmux-navigator
-      sensible  # Re-enabled with workaround below
+      sensible
       yank
       prefix-highlight
       {
@@ -360,7 +319,7 @@ let name = "Dustin Lyons";
         # Use XDG data directory
         # https://github.com/tmux-plugins/tmux-resurrect/issues/348
         extraConfig = ''
-          set -g @resurrect-dir '/Users/dustin/.cache/tmux/resurrect'
+          set -g @resurrect-dir '$HOME/.cache/tmux/resurrect'
           set -g @resurrect-capture-pane-contents 'on'
           set -g @resurrect-pane-contents-area 'visible'
         '';
@@ -422,10 +381,20 @@ let name = "Dustin Lyons";
       bind-key -T copy-mode-vi 'C-k' select-pane -U
       bind-key -T copy-mode-vi 'C-l' select-pane -R
       bind-key -T copy-mode-vi 'C-\' select-pane -l
-      
-      # Darwin-specific fix for tmux 3.5a with sensible plugin
-      # This MUST be at the very end of the config
-      set -g default-command "$SHELL"
       '';
+    };
+
+    fzf = {
+      enable = true;
+      enableZshIntegration = true;
+    };
+
+    eza = {
+      enable = true;
+      icons = true;
+    };
+
+    direnv = {
+      enable = true;
     };
 }

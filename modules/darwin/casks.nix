@@ -2,33 +2,42 @@ _:
 
 [
   # Development Tools
-  "claude"
-  "insomnia"
-  "tableplus"
-  "ngrok"
-  "postico"
+  "homebrew/cask/docker"
   "visual-studio-code"
-  "wireshark-app"
 
-  # Communication Tools
-  "discord"
-  "loom"
+  # Productivity
+  "box-drive"
+  "notion"
+  "notion-calendar"
   "slack"
-  "telegram"
   "zoom"
+  "signal"
+
+  # Design
+  "bambu-studio"
+  "handbrake"
+  "touchosc"
 
   # Utility Tools
-  "appcleaner"
-  "syncthing-app"
+  #"syncthing"
 
   # Entertainment Tools
-  "steam"
   "vlc"
 
-  # Productivity Tools
-  "raycast"
-  "asana"
+  # Bio
+  "fiji"
 
-  # Browsers
-  "google-chrome"
+  # Development
+  "silicon-labs-vcp-driver"
+  "arduino-ide"
+  "raspberry-pi-imager"
+  "balenaetcher"
+
+  # Utilties
+  "rectangle"
+  "arq"
+  "betterdisplay"
+  "iterm2"
+  "sanesidebuttons"
+  "unnaturalscrollwheels"
 ]
